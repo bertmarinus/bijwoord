@@ -619,31 +619,36 @@
 
 <script>
 
-        // GELUIDJES
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        function playGoedGeluid() {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.frequency.value = 800;
-            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-            osc.start(audioCtx.currentTime);
-            osc.stop(audioCtx.currentTime + 0.15);
+        // GELUIDJES - lazy init na gebruikersinteractie
+        let audioCtx = null;
+        function getAudioCtx() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
         }
-
+        function playGoedGeluid() {
+            try {
+                const ctx = getAudioCtx();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.frequency.value = 800;
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+                osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.15);
+            } catch(e) {}
+        }
         function playFoutGeluid() {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.frequency.value = 200;
-            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-            osc.start(audioCtx.currentTime);
-            osc.stop(audioCtx.currentTime + 0.2);
+            try {
+                const ctx = getAudioCtx();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.frequency.value = 200;
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+                osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.2);
+            } catch(e) {}
         }
 
     // ============================================================
@@ -918,9 +923,11 @@
     function toonFeedback(type, subtekst, duur) {
         sluitAlleFeedback();
         if (type === 'goed') {
+            playGoedGeluid();
             document.getElementById('feedbackGoedSub').textContent = subtekst;
             document.getElementById('feedbackGoed').classList.remove('hidden');
         } else {
+            playFoutGeluid();
             document.getElementById('feedbackFoutSub').textContent = subtekst;
             document.getElementById('feedbackFout').classList.remove('hidden');
         }
