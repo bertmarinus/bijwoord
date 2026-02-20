@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bijwoord - LearnForge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --secondary: #48bb78;
+            --card-bg: #ffffff;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --border: #e2e8f0;
+            --success: #48bb78;
+            --error: #f56565;
+        }
+
+        body {
+            font-family: 'Nunito', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #e0e7ff 0%, #fce7f3 50%, #dbeafe 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; }
+
+        /* TERUG LINK */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 18px;
+            transition: color 0.3s;
+        }
+        .back-link:hover { color: var(--primary); }
+
+        /* SCORE BALK */
+        .score-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 18px;
+            padding: 14px 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .score-info {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .score-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .score-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .score-dot.goed { background: var(--success); }
+        .score-dot.fout { background: var(--error); }
+
+        .score-teller {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 21px;
+            font-weight: 700;
+            color: var(--primary);
+            background: #e0e7ff;
+            padding: 6px 18px;
+            border-radius: 20px;
+        }
+
+        .reset-btn {
+            background: none;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .reset-btn:hover { border-color: var(--error); color: var(--error); }
+
+        /* VRAAGKAART */
+        .question-card {
+            background: var(--primary);
+            border-radius: 24px;
+            padding: 36px 44px;
+            margin-bottom: 22px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+        }
+
+        .question-label {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            opacity: 0.75;
+            margin-bottom: 14px;
+        }
+
+        .question-sentence {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        /* CONTENT KAART */
+        .content-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 38px 44px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-icon {
+            width: 68px; height: 68px;
+            border-radius: 18px;
+            background: #dbeafe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            margin: 0 auto 18px;
+        }
+
+        .card-title {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--text-dark);
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        .card-subtitle {
+            color: var(--text-light);
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        /* INVOER */
+        .text-input {
+            width: 100%;
+            padding: 18px 22px;
+            border: 3px solid var(--border);
+            border-radius: 16px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            text-align: center;
+            color: var(--text-dark);
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.12);
+        }
+
+        .text-input::placeholder { color: #cbd5e0; }
+
+        /* KNOPPEN */
+        .button-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 14px;
+        }
+
+        .btn-check {
+            padding: 16px 24px;
+            background: var(--primary);
+            border: none;
+            border-radius: 14px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-check:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-hint {
+            padding: 16px 24px;
+            background: #fef3c7;
+            border: 2px solid #f6d860;
+            border-radius: 14px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: #92400e;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-hint:hover {
+            background: #fde68a;
+            transform: translateY(-2px);
+        }
+
+        /* =============================================
+           FEEDBACK POPUPS — goed en fout
+           Stijl: gecentreerde kaart midden in scherm
+        ============================================= */
+        .feedback-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            padding: 20px;
+            animation: fadeIn 0.15s ease;
+        }
+
+        .feedback-popup {
+            width: 320px;
+            border-radius: 28px;
+            padding: 44px 36px 38px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            text-align: center;
+        }
+
+        .feedback-popup.goed { background: #4caf7d; }
+        .feedback-popup.fout { background: #e86060; }
+
+        .feedback-cirkel {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            margin-bottom: 22px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+
+        .feedback-tekst {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 34px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .feedback-sub {
+            font-family: 'Nunito', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.85);
+            margin-top: 8px;
+        }
+
+        /* =============================================
+           HINT MODAL
+        ============================================= */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+        .modal-content {
+            background: white;
+            border-radius: 22px;
+            padding: 32px 40px;
+            max-width: 420px;
+            width: 92%;
+            text-align: left;
+            animation: popIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+        }
+
+        @keyframes popIn {
+            from { opacity:0; transform:scale(0.85); }
+            to   { opacity:1; transform:scale(1); }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .modal-icon-circle {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: #dbeafe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .modal-title {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .hint-antwoord {
+            background: #e0e7ff;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .hint-antwoord-woord {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .hint-subtext {
+            font-weight: 700;
+            color: var(--text-dark);
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .hint-tips { list-style: none; padding: 0; }
+
+        .hint-tips li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 9px 0;
+            font-size: 16px;
+            color: var(--text-dark);
+            border-bottom: 1px solid var(--border);
+            line-height: 1.5;
+        }
+
+        .hint-tips li:last-child { border-bottom: none; }
+
+        .hint-tips li::before {
+            content: "•";
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 22px;
+            line-height: 1.1;
+            flex-shrink: 0;
+        }
+
+        .modal-footer { margin-top: 22px; text-align: right; }
+
+        .btn-ok {
+            padding: 12px 32px;
+            background: var(--primary);
+            border: none;
+            border-radius: 12px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 14px rgba(102,126,234,0.35);
+        }
+
+        .btn-ok:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102,126,234,0.45);
+        }
+
+        /* EINDSCHERM */
+        .eindscherm { display: none; text-align: center; }
+
+        .eind-score {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 72px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 8px 0;
+        }
+
+        .eind-label  { color: var(--text-light); font-size: 18px; margin-bottom: 12px; }
+        .eind-bericht { font-size: 18px; color: var(--text-dark); margin-bottom: 30px; }
+
+        .final-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .btn-secondary {
+            padding: 15px 20px;
+            border: 3px solid var(--border);
+            background: white;
+            border-radius: 14px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .btn-secondary:hover { border-color: var(--text-light); background: #f7fafc; }
+
+        .btn-success {
+            padding: 15px 20px;
+            background: var(--secondary);
+            border: none;
+            border-radius: 14px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 17px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 20px rgba(72,187,120,0.3);
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(72,187,120,0.4);
+        }
+
+        .hidden { display: none !important; }
+
+        /* =============================================
+           RESPONSIVE
+        ============================================= */
+        @media (max-width: 900px) {
+            .content-card { padding: 32px 30px; }
+            .question-card { padding: 28px 30px; }
+            .question-sentence { font-size: 26px; }
+        }
+
+        @media (max-width: 700px) {
+            body { padding: 14px; }
+            .question-card { padding: 24px 20px; }
+            .question-sentence { font-size: 22px; }
+            .content-card { padding: 26px 20px; }
+            .card-title { font-size: 23px; }
+            .final-buttons { grid-template-columns: 1fr; }
+            .feedback-popup { width: 280px; padding: 36px 28px 30px; }
+            .feedback-tekst { font-size: 26px; }
+        }
+
+        @media (max-width: 480px) {
+            .question-sentence { font-size: 19px; }
+            .text-input { font-size: 19px; }
+            .button-row { grid-template-columns: 1fr; }
+            .score-info { gap: 10px; }
+            .feedback-cirkel { width: 66px; height: 66px; font-size: 32px; }
+        }
+
+        /* iPad landscape */
+        @media (orientation: landscape) and (max-height: 768px) {
+            body { padding: 12px; }
+            .question-card { padding: 18px 40px; margin-bottom: 14px; }
+            .question-label { margin-bottom: 8px; }
+            .question-sentence { font-size: 26px; }
+            .content-card { padding: 22px 40px; }
+            .card-icon { width: 52px; height: 52px; font-size: 26px; margin-bottom: 12px; }
+            .card-title { font-size: 22px; margin-bottom: 4px; }
+            .card-subtitle { font-size: 14px; margin-bottom: 16px; }
+            .text-input { padding: 14px 22px; margin-bottom: 14px; }
+            .score-bar { padding: 10px 20px; margin-bottom: 14px; }
+            .feedback-popup { width: 260px; padding: 32px 24px 26px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Terug link -->
+    <div style="display:flex; gap:16px; margin-bottom:18px; flex-wrap:wrap;">
+        <a href="https://bertmarinus.github.io/learnforge/" class="back-link">🏠 Hoofdmenu</a>
+        <a href="https://bertmarinus.github.io/learnforge/" class="back-link">← Terug naar overzicht</a>
+    </div>
+
+
+
+    <!-- Vraagkaart -->
+    <div class="question-card" id="questionCard">
+        <div class="question-label">Zoek het bijwoord</div>
+        <div class="question-sentence" id="questionSentence">…</div>
+    </div>
+
+    <!-- Oefening kaart -->
+    <div class="content-card" id="oefeningCard">
+        <div class="card-icon">⚡</div>
+        <div class="card-title">Wat is het bijwoord?</div>
+        <div class="card-subtitle">Typ het bijwoord en druk op Enter of Controleer.</div>
+
+        <input
+            type="text"
+            class="text-input"
+            id="antwoordInput"
+            placeholder="typ hier…"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="none"
+            spellcheck="false"
+            enterkeyhint="done"
+        >
+
+        <div class="button-row">
+            <button class="btn-hint" id="hintBtn" onclick="showHint()">💡 Hint</button>
+            <button class="btn-check" id="checkBtn" onclick="controleer()">✓ Controleer</button>
+        </div>
+    </div>
+
+    <!-- Eindscherm -->
+    <div class="content-card eindscherm" id="eindscherm">
+        <div class="card-icon" style="background:#d1fae5;">🏆</div>
+        <div class="card-title">Alle zinnen gehad!</div>
+        <div class="eind-score" id="eindScore">0/0</div>
+        <div class="eind-label">goed / totaal geprobeerd</div>
+        <div class="eind-bericht" id="eindBericht"></div>
+        <div class="final-buttons">
+            <button class="btn-secondary" onclick="herstart()">🔁 Opnieuw</button>
+            <a href="https://bertmarinus.github.io/learnforge/" class="btn-success">← Terug naar overzicht</a>
+            <a href="https://bertmarinus.github.io/learnforge/" class="btn-secondary">🏠 Hoofdmenu</a>
+        </div>
+    </div>
+
+</div>
+
+<!-- FEEDBACK POPUP: GOED -->
+<div class="feedback-overlay hidden" id="feedbackGoed">
+    <div class="feedback-popup goed">
+        <div class="feedback-cirkel">✔</div>
+        <div class="feedback-tekst">Goed zo! 🎉</div>
+        <div class="feedback-sub" id="feedbackGoedSub"></div>
+    </div>
+</div>
+
+<!-- FEEDBACK POPUP: FOUT -->
+<div class="feedback-overlay hidden" id="feedbackFout">
+    <div class="feedback-popup fout">
+        <div class="feedback-cirkel">✕</div>
+        <div class="feedback-tekst">Helaas!</div>
+        <div class="feedback-sub" id="feedbackFoutSub"></div>
+    </div>
+</div>
+
+<!-- HINT MODAL -->
+<div class="modal-overlay hidden" id="modalHint">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-icon-circle">💡</div>
+            <div class="modal-title">Hint</div>
+        </div>
+
+        <div class="hint-subtext">Hoe herken ik een bijwoord?</div>
+        <ul class="hint-tips">
+            <li>Een bijwoord zegt iets over hoe, wanneer of waar iets gebeurt</li>
+            <li>Voorbeelden: snel, gisteren, hier, altijd, erg, nooit</li>
+        </ul>
+
+        <div class="modal-footer">
+            <button class="btn-ok" onclick="sluitHint()">OK</button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+        // GELUIDJES
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playGoedGeluid() {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = 800;
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.15);
+        }
+
+        function playFoutGeluid() {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = 200;
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.2);
+        }
+
+    // ============================================================
+    // DATA — 200 zinnen, elke keer geschud
+    // ============================================================
+    const alleOefeningen = [
+
+        // BIJWOORD OP POSITIE 1
+        { zin: "Snel liep hij naar huis.", bw: "snel" },
+        { zin: "Langzaam reed de trein weg.", bw: "langzaam" },
+        { zin: "Gisteren vergat zij haar sleutels.", bw: "gisteren" },
+        { zin: "Morgen gaan ze op reis.", bw: "morgen" },
+        { zin: "Altijd staat hij vroeg op.", bw: "altijd" },
+        { zin: "Nooit geeft zij het op.", bw: "nooit" },
+        { zin: "Vaak fietst hij naar het werk.", bw: "vaak" },
+        { zin: "Soms vergeet hij zijn boek.", bw: "soms" },
+        { zin: "Vroeg begint ze met werken.", bw: "vroeg" },
+        { zin: "Laat komt hij thuis.", bw: "laat" },
+        { zin: "Hier wacht hij al heel lang.", bw: "hier" },
+        { zin: "Daar staat een grote boom.", bw: "daar" },
+        { zin: "Buiten speelt ze met haar fiets.", bw: "buiten" },
+        { zin: "Binnen zit iedereen warm.", bw: "binnen" },
+        { zin: "Hard werkt hij de hele dag.", bw: "hard" },
+        { zin: "Zacht fluisterde ze zijn naam.", bw: "zacht" },
+        { zin: "Plotseling stopte de auto.", bw: "plotseling" },
+        { zin: "Gelukkig was ze niet gewond.", bw: "gelukkig" },
+        { zin: "Misschien komt hij vanavond.", bw: "misschien" },
+        { zin: "Eindelijk was het vakantie.", bw: "eindelijk" },
+        { zin: "Samen liepen ze door het park.", bw: "samen" },
+        { zin: "Overal lagen gevallen bladeren.", bw: "overal" },
+        { zin: "Nergens kon hij haar vinden.", bw: "nergens" },
+        { zin: "Helaas was het museum gesloten.", bw: "helaas" },
+        { zin: "Bijna was hij te laat.", bw: "bijna" },
+        { zin: "Opnieuw probeerde ze het probleem op te lossen.", bw: "opnieuw" },
+        { zin: "Zeker weet hij het antwoord.", bw: "zeker" },
+        { zin: "Meteen belde ze terug.", bw: "meteen" },
+        { zin: "Bovenop stond een ster.", bw: "bovenop" },
+        { zin: "Ergens klinkt muziek.", bw: "ergens" },
+
+        // BIJWOORD OP POSITIE 2 (na subject)
+        { zin: "Hij loopt snel naar buiten.", bw: "snel" },
+        { zin: "Zij zingt mooi.", bw: "mooi" },
+        { zin: "Hij rijdt voorzichtig.", bw: "voorzichtig" },
+        { zin: "Ze lacht vrolijk.", bw: "vrolijk" },
+        { zin: "Hij praat zacht.", bw: "zacht" },
+        { zin: "Ze eet langzaam.", bw: "langzaam" },
+        { zin: "Hij denkt goed na.", bw: "goed" },
+        { zin: "Ze springt hoog.", bw: "hoog" },
+        { zin: "Hij huilt stil.", bw: "stil" },
+        { zin: "Ze danst graag.", bw: "graag" },
+        { zin: "Hij fietst dagelijks.", bw: "dagelijks" },
+        { zin: "Ze kookt heerlijk.", bw: "heerlijk" },
+        { zin: "Hij antwoordt altijd.", bw: "altijd" },
+        { zin: "Ze helpt vrijwillig.", bw: "vrijwillig" },
+        { zin: "Hij leest aandachtig.", bw: "aandachtig" },
+        { zin: "Ze schrijft netjes.", bw: "netjes" },
+        { zin: "Hij reageert snel.", bw: "snel" },
+        { zin: "Ze tekent precies.", bw: "precies" },
+        { zin: "Hij speelt buiten.", bw: "buiten" },
+        { zin: "Ze wacht geduldig.", bw: "geduldig" },
+        { zin: "Hij werkt nauwkeurig.", bw: "nauwkeurig" },
+        { zin: "Ze zingt zachtjes.", bw: "zachtjes" },
+        { zin: "Hij praat luid.", bw: "luid" },
+        { zin: "Ze kijkt omhoog.", bw: "omhoog" },
+        { zin: "Ze loopt voorzichtig.", bw: "voorzichtig" },
+
+        // BIJWOORD OP POSITIE 3 (na subject + ww)
+        { zin: "Hij loopt heel snel.", bw: "snel" },
+        { zin: "Ze werkt erg hard.", bw: "hard" },
+        { zin: "Hij slaapt altijd vroeg.", bw: "vroeg" },
+        { zin: "Ze zingt zo mooi.", bw: "mooi" },
+        { zin: "Hij rijdt nooit voorzichtig.", bw: "voorzichtig" },
+        { zin: "Ze lacht altijd vrolijk.", bw: "vrolijk" },
+        { zin: "Hij eet altijd langzaam.", bw: "langzaam" },
+        { zin: "Ze speelt heel goed.", bw: "goed" },
+        { zin: "Hij zingt erg vals.", bw: "vals" },
+        { zin: "Ze leest heel snel.", bw: "snel" },
+        { zin: "Hij fietst nooit langzaam.", bw: "langzaam" },
+        { zin: "Ze werkt altijd netjes.", bw: "netjes" },
+        { zin: "Hij praat vaak luid.", bw: "luid" },
+        { zin: "Ze kookt soms heerlijk.", bw: "heerlijk" },
+        { zin: "Hij schrijft heel duidelijk.", bw: "duidelijk" },
+        { zin: "Ze loopt altijd vrolijk.", bw: "vrolijk" },
+        { zin: "Hij antwoordt nooit snel.", bw: "snel" },
+        { zin: "Ze tekent altijd precies.", bw: "precies" },
+        { zin: "Hij reageert soms boos.", bw: "boos" },
+        { zin: "Ze danst altijd graag.", bw: "graag" },
+        { zin: "Hij helpt altijd goed.", bw: "goed" },
+        { zin: "Ze leert altijd snel.", bw: "snel" },
+        { zin: "Hij kijkt altijd omhoog.", bw: "omhoog" },
+        { zin: "Ze luistert altijd aandachtig.", bw: "aandachtig" },
+        { zin: "Hij werkt altijd nauwkeurig.", bw: "nauwkeurig" },
+        { zin: "Ze wacht altijd geduldig.", bw: "geduldig" },
+        { zin: "Hij slaapt heel diep.", bw: "diep" },
+        { zin: "Ze rent altijd hard.", bw: "hard" },
+        { zin: "Ze springt erg hoog.", bw: "hoog" },
+        { zin: "Hij werkt altijd hard.", bw: "hard" },
+
+        // BIJWOORD OP POSITIE 4+
+        { zin: "Hij vertelde het verhaal enthousiast.", bw: "enthousiast" },
+        { zin: "Ze las haar boek aandachtig.", bw: "aandachtig" },
+        { zin: "Ze beantwoordde de vragen correct.", bw: "correct" },
+        { zin: "Hij speelde het stuk foutloos.", bw: "foutloos" },
+        { zin: "Ze rende de trap omhoog.", bw: "omhoog" },
+        { zin: "Hij sprak voor de klas zelfverzekerd.", bw: "zelfverzekerd" },
+        { zin: "Ze zong het lied prachtig.", bw: "prachtig" },
+        { zin: "Hij deed zijn huiswerk zorgvuldig.", bw: "zorgvuldig" },
+        { zin: "Ze begroette haar gasten hartelijk.", bw: "hartelijk" },
+        { zin: "Ze beklom de berg langzaam.", bw: "langzaam" },
+        { zin: "Hij beantwoordde elke vraag correct.", bw: "correct" },
+        { zin: "Ze speelde haar rol overtuigend.", bw: "overtuigend" },
+        { zin: "Hij reed de bochten voorzichtig.", bw: "voorzichtig" },
+        { zin: "Ze leerde de tekst vlot.", bw: "vlot" },
+        { zin: "Hij tekende het schetsje snel.", bw: "snel" },
+        { zin: "Ze sprak haar woorden duidelijk.", bw: "duidelijk" },
+        { zin: "Ze werkte aan het project ijverig.", bw: "ijverig" },
+        { zin: "Hij schilderde het doek nauwkeurig.", bw: "nauwkeurig" },
+        { zin: "Hij fietste door de regen vrolijk.", bw: "vrolijk" },
+        { zin: "Ze werkte aan haar plan gestaag.", bw: "gestaag" },
+
+        // BIJWOORDEN VAN TIJD VOORAAN
+        { zin: "Vandaag heeft hij een toets.", bw: "vandaag" },
+        { zin: "Gisteren won ze de wedstrijd.", bw: "gisteren" },
+        { zin: "Morgen vertrekt hij vroeg.", bw: "morgen" },
+        { zin: "Straks gaan ze eten.", bw: "straks" },
+        { zin: "Vroeger woonde hij hier.", bw: "vroeger" },
+        { zin: "Nu is het te laat.", bw: "nu" },
+        { zin: "Toen begreep ze het ineens.", bw: "toen" },
+        { zin: "Ooit was dit een kasteel.", bw: "ooit" },
+        { zin: "Binnenkort rijden ze naar zee.", bw: "binnenkort" },
+        { zin: "Daarna gingen ze slapen.", bw: "daarna" },
+        { zin: "Eerder was ze hier al geweest.", bw: "eerder" },
+        { zin: "Ondertussen werkte hij rustig door.", bw: "ondertussen" },
+        { zin: "Tegelijkertijd spraken ze allebei.", bw: "tegelijkertijd" },
+        { zin: "Intussen wachtte ze geduldig.", bw: "intussen" },
+        { zin: "Daarvoor had hij goed geoefend.", bw: "daarvoor" },
+        { zin: "Sindsdien is ze veel vrolijker.", bw: "sindsdien" },
+        { zin: "Inmiddels heeft hij een diploma.", bw: "inmiddels" },
+        { zin: "Voorheen fietste ze elke dag.", bw: "voorheen" },
+        { zin: "Achteraf was het een goed idee.", bw: "achteraf" },
+        { zin: "Voortaan doet ze het anders.", bw: "voortaan" },
+
+        // BIJWOORDEN VAN GRAAD / INTENSITEIT
+        { zin: "Het water is erg koud.", bw: "erg" },
+        { zin: "De berg is heel hoog.", bw: "heel" },
+        { zin: "Hij is bijna klaar.", bw: "bijna" },
+        { zin: "Ze is tamelijk moe.", bw: "tamelijk" },
+        { zin: "Het is nogal laat.", bw: "nogal" },
+        { zin: "Hij is vrij snel.", bw: "vrij" },
+        { zin: "Ze is enorm blij.", bw: "enorm" },
+        { zin: "Het is absoluut geweldig.", bw: "absoluut" },
+        { zin: "Hij is ontzettend moe.", bw: "ontzettend" },
+        { zin: "Ze is volkomen rustig.", bw: "volkomen" },
+        { zin: "Het is werkelijk prachtig.", bw: "werkelijk" },
+        { zin: "Hij is behoorlijk fit.", bw: "behoorlijk" },
+        { zin: "Ze is bijzonder slim.", bw: "bijzonder" },
+        { zin: "Het is uiterst gevaarlijk.", bw: "uiterst" },
+        { zin: "Hij is enigszins verlegen.", bw: "enigszins" },
+        { zin: "Ze is vreselijk zenuwachtig.", bw: "vreselijk" },
+        { zin: "Het is extreem warm.", bw: "extreem" },
+        { zin: "Ze is volstrekt onschuldig.", bw: "volstrekt" },
+        { zin: "Het is verbazend mooi.", bw: "verbazend" },
+        { zin: "Hij is enorm sterk.", bw: "enorm" },
+
+        // BIJWOORDEN VAN WIJZE
+        { zin: "Ze praat altijd eerlijk.", bw: "eerlijk" },
+        { zin: "Hij reageert impulsief.", bw: "impulsief" },
+        { zin: "Ze handelt verstandig.", bw: "verstandig" },
+        { zin: "Hij kijkt nieuwsgierig.", bw: "nieuwsgierig" },
+        { zin: "Ze loopt trots.", bw: "trots" },
+        { zin: "Hij antwoordt hoffelijk.", bw: "hoffelijk" },
+        { zin: "Ze gedraagt zich netjes.", bw: "netjes" },
+        { zin: "Hij reageert kalm.", bw: "kalm" },
+        { zin: "Ze lacht vriendelijk.", bw: "vriendelijk" },
+        { zin: "Hij werkt geconcentreerd.", bw: "geconcentreerd" },
+        { zin: "Ze luistert geduldig.", bw: "geduldig" },
+        { zin: "Hij tekent zorgvuldig.", bw: "zorgvuldig" },
+        { zin: "Ze beweegt soepel.", bw: "soepel" },
+        { zin: "Hij speelt creatief.", bw: "creatief" },
+        { zin: "Ze werkt efficiënt.", bw: "efficiënt" },
+        { zin: "Hij denkt logisch.", bw: "logisch" },
+        { zin: "Ze handelt spontaan.", bw: "spontaan" },
+        { zin: "Hij praat enthousiast.", bw: "enthousiast" },
+        { zin: "Ze werkt systematisch.", bw: "systematisch" },
+        { zin: "Hij beweegt zich gracieux.", bw: "gracieux" },
+
+        // BIJWOORDEN VAN PLAATS
+        { zin: "Ze wachtte buiten in de regen.", bw: "buiten" },
+        { zin: "Hij zat binnen bij het vuur.", bw: "binnen" },
+        { zin: "Ze keek omhoog naar de lucht.", bw: "omhoog" },
+        { zin: "Hij keek omlaag naar zijn schoenen.", bw: "omlaag" },
+        { zin: "Ze liep achteruit.", bw: "achteruit" },
+        { zin: "Hij stapte vooruit.", bw: "vooruit" },
+        { zin: "Ze woont ver weg.", bw: "ver" },
+        { zin: "Hij staat dichtbij.", bw: "dichtbij" },
+        { zin: "Hij zat bovenaan.", bw: "bovenaan" },
+        { zin: "Ze stond onderaan.", bw: "onderaan" },
+        { zin: "Hij liep rechtdoor.", bw: "rechtdoor" },
+        { zin: "Ze ging linksaf.", bw: "linksaf" },
+        { zin: "Hij sloeg rechtsaf.", bw: "rechtsaf" },
+        { zin: "Ze keek naar achteren.", bw: "achteren" },
+        { zin: "Hij stond verderop.", bw: "verderop" },
+        { zin: "Ze zat ertegenover.", bw: "ertegenover" },
+        { zin: "Ze viel erachter.", bw: "erachter" },
+        { zin: "Hij stond eromheen.", bw: "eromheen" },
+        { zin: "Ze woont ergens anders.", bw: "ergens" },
+        { zin: "Hij bleef erbij.", bw: "erbij" },
+
+        // GEMIXTE KORTE ZINNEN
+        { zin: "Hij reed snel voorbij.", bw: "snel" },
+        { zin: "Ze liep langzaam terug.", bw: "langzaam" },
+        { zin: "Hij viel bijna.", bw: "bijna" },
+        { zin: "Ze won glansrijk.", bw: "glansrijk" },
+        { zin: "Hij aarzelde even.", bw: "even" },
+        { zin: "Ze knikte instemmend.", bw: "instemmend" },
+        { zin: "Ze glimlachte verlegen.", bw: "verlegen" },
+        { zin: "Hij kuchte zachtjes.", bw: "zachtjes" },
+        { zin: "Ze zuchtte diep.", bw: "diep" },
+        { zin: "Hij fluisterde geheimzinnig.", bw: "geheimzinnig" },
+        { zin: "Ze schudde ontkennend.", bw: "ontkennend" },
+        { zin: "Hij knikte bevestigend.", bw: "bevestigend" },
+        { zin: "Ze lachte hartelijk.", bw: "hartelijk" },
+        { zin: "Hij keek schuchter.", bw: "schuchter" },
+        { zin: "Ze liep vastberaden.", bw: "vastberaden" },
+    ];
+
+    function shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
+    let oefeningen = shuffle(alleOefeningen);
+    let huidigIndex = 0;
+    let aantalGoed  = 0;
+    let aantalFout  = 0;
+    let bezig       = false;
+    let feedbackTimer = null;
+
+    function laadOefening(index) {
+        if (index >= oefeningen.length) { toonEindscherm(); return; }
+        document.getElementById('questionSentence').textContent = oefeningen[index].zin;
+        const el = document.getElementById('antwoordInput');
+        el.value = '';
+        el.disabled = false;
+        el.className = 'text-input';
+        bezig = false;
+        setTimeout(function() { el.focus(); }, 50);
+    }
+
+    function controleer() {
+        if (bezig) return;
+        if (!document.getElementById('modalHint').classList.contains('hidden')) return;
+        const el = document.getElementById('antwoordInput');
+        const invoer = el.value.trim().toLowerCase();
+        const juist  = oefeningen[huidigIndex].bw.toLowerCase();
+        if (!invoer) return;
+        bezig = true;
+        el.disabled = true;
+        if (invoer === juist) {
+            aantalGoed++;
+            toonFeedback('goed', '"' + oefeningen[huidigIndex].bw + '" is correct!', 1400);
+        } else {
+            aantalFout++;
+            toonFeedback('fout', 'Het antwoord is: ' + oefeningen[huidigIndex].bw, 2000);
+        }
+    }
+
+    function toonFeedback(type, subtekst, duur) {
+        sluitAlleFeedback();
+        if (type === 'goed') {
+            document.getElementById('feedbackGoedSub').textContent = subtekst;
+            document.getElementById('feedbackGoed').classList.remove('hidden');
+        } else {
+            document.getElementById('feedbackFoutSub').textContent = subtekst;
+            document.getElementById('feedbackFout').classList.remove('hidden');
+        }
+        feedbackTimer = setTimeout(function() {
+            sluitAlleFeedback();
+            huidigIndex++;
+            laadOefening(huidigIndex);
+        }, duur);
+    }
+
+    function sluitAlleFeedback() {
+        document.getElementById('feedbackGoed').classList.add('hidden');
+        document.getElementById('feedbackFout').classList.add('hidden');
+        if (feedbackTimer) { clearTimeout(feedbackTimer); feedbackTimer = null; }
+    }
+
+    function showHint() {
+        document.getElementById('modalHint').classList.remove('hidden');
+    }
+
+    function sluitHint() {
+        document.getElementById('modalHint').classList.add('hidden');
+    }
+
+    function toonEindscherm() {
+        document.getElementById('oefeningCard').style.display = 'none';
+        document.getElementById('questionCard').style.display = 'none';
+        document.getElementById('eindscherm').style.display   = 'block';
+        const totaal = aantalGoed + aantalFout;
+        document.getElementById('eindScore').textContent = aantalGoed + ' / ' + totaal;
+        const r = totaal > 0 ? aantalGoed / totaal : 0;
+        document.getElementById('eindBericht').textContent =
+            r === 1   ? '🌟 Fantastisch! Alles goed!' :
+            r >= 0.75 ? '👍 Goed gedaan! Blijf oefenen!' :
+            r >= 0.5  ? '🙂 Aardig werk, oefen nog wat meer.' :
+                        '💪 Blijf oefenen, het lukt je!';
+    }
+
+    function herstart() {
+        oefeningen = shuffle(alleOefeningen);
+        aantalGoed = aantalFout = huidigIndex = 0;
+        document.getElementById('oefeningCard').style.display = 'block';
+        document.getElementById('questionCard').style.display = 'block';
+        document.getElementById('eindscherm').style.display   = 'none';
+        laadOefening(0);
+    }
+
+    // Enter op desktop én mobiel
+    document.getElementById('antwoordInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); controleer(); }
+    });
+    document.getElementById('antwoordInput').addEventListener('keyup', function(e) {
+        if (e.keyCode === 13) { e.preventDefault(); controleer(); }
+    });
+
+    // START
+    laadOefening(0);
+</script>
+</body>
+</html>
